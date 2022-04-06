@@ -4,7 +4,6 @@ ext=$(kdialog --checklist "Select File-Extension(s):" 1 "*.mkv" on 2 "*.avi" off
 rcExt=$?
 if [[ $rcExt == 0 ]]; then
 	for i in $ext; do
-		+kdialog --msgbox $i
 		case $i in
 			'"1"' )
                 find $dir -mindepth 2 -name '*.mkv' -exec mv {} $dir \; -exec kdialog --passivepopup {} \;
