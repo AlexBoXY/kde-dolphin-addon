@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Service
+X-KDE-ServiceTypes=KonqPopupMenu/Plugin
+MimeType=application/x-7z-compressed;application/x-rar-compressed;application/zip;
+Actions=extractPass
+
+
+[Desktop Action extractPass]
+Name=Extract archives with password
+Name[de]=Extrahiert Archive mit Passwort
+Icon=application-x-7z-compressed
+Exec=/bin/sh -c 'archiv_extract.sh "%U"'

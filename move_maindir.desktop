@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Service
+X-KDE-ServiceTypes=KonqPopupMenu/Plugin
+MimeType=inode/directory;
+Actions=mvMainDir
+
+
+[Desktop Action mvMainDir]
+Name=Move files to main directory
+Name[de]=Verschiebt Dateien ins Hauptverzeichnis
+Icon=inode-directory
+Exec=/bin/sh -c 'move_maindir.sh "%U"'
