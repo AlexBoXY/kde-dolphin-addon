@@ -9,7 +9,7 @@ Depends on kdialog, unrar, p7zip.
 ### Installation:
 * Place archiv_extract.sh in your ~/.local/bin directory. Make it executable.
 * Place archiv_extract.desktop in your ~/.local/share/kservices5/ServiceMenus directory.
-* Place archiv_extract.pass in your ~/.config directory. Customize the file to your needs (one password per line).
+* Place archiv_extract.conf in your ~/.config directory. Customize the file to your needs (one password per line).
 
 ## move_mainDir
 Moves files from subdirectories matching choosen extension into current directory.
