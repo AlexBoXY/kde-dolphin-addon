@@ -2,9 +2,9 @@
 Addons for Dolphin ServiceMenu
 
 ## archiv_extract
-Extract selected archives using passwords from file to choosen directory. 
+Extract selected archives using passwords from file to choosen directory.
 So it's more conviniend than Dolphins integrated ARK menu entries.
-Depends on kdialog, unrar, p7zip.
+Depends on: kdialog, dunst, unrar, p7zip.
 
 ### Installation:
 * Place archiv_extract.sh in your ~/.local/bin directory. Make it executable.
@@ -13,7 +13,7 @@ Depends on kdialog, unrar, p7zip.
 
 ## move_mainDir
 Moves files from subdirectories matching choosen extension into current directory.
-Depends on kdialog and find.
+Depends on kdialog, dunst and find.
 
 ### Installation:
 * Place move_mainDir.sh in your ~/.local/bin directory. Make it executable.

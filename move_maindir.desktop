@@ -6,7 +6,7 @@ Actions=mvMainDir
 
 
 [Desktop Action mvMainDir]
-Name=Move files to main directory
-Name[de]=Verschiebt Dateien ins Hauptverzeichnis
+Name=Move files to recent directory
+Name[de]=Verschiebt Dateien ins aktuelle Verzeichnis
 Icon=inode-directory
 Exec=/bin/sh -c 'move_maindir.sh "%U"'

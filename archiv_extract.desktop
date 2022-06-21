@@ -7,6 +7,6 @@ Actions=extractPass
 
 [Desktop Action extractPass]
 Name=Extract archives with password
-Name[de]=Extrahiert Archive mit Passwort
+Name[de]=Entpackt Archive mit Passwort
 Icon=application-x-7z-compressed
 Exec=/bin/sh -c 'archiv_extract.sh "%U"'

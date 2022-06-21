@@ -13,15 +13,22 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
 where=$(dirname "$@")
 cd "$where"
 # Passwords must be in file ~/.config/archiv_extract.pass  (one password per line)
-PASSWORDS="$HOME/.config/archiv_extract.conf"
-dir=$(kdialog --getexistingdirectory ~/);
+PASSWORDS="$HOME/.config/archiv_extract.pass"
+msgTag="archiv_extract"
+dir=$(kdialog --getexistingdirectory ~/Videos/raw);
+max=$(echo $@|wc -w)
+cnt=0
+failc=0
+failf=""
+msgid=123
 if [[ $? == 0 ]]; then
 	for i in $@; do
-		kdialog --title "Extract w PW" --passivepopup "$i"
+		let cnt++
+		dunstify -r $msgid -a "Extract w PW" -u low -i dialog-information "$cnt of $max files.
+Next: $i"
 		status="fail"
 		while read -r pass; do
 			if [[ $i == *".rar" ]]; then
@@ -33,13 +40,15 @@ if [[ $? == 0 ]]; then
 			fi
 			if [[ $rc != 0 ]]; then
 				status="fail"
-				kdialog --title "Extract w PW" --passivepopup "Failed $i with PW: $pass"
+				failf+="$i "
+				let failc++
+				dunstify -a "Extract w PW" -u low -i dialog-information  "Failed $i with PW: $pass"
 			else
 				status="success"
-				kdialog --title "Extract w PW" --passivepopup "Success $i with PW: $pass"
 				break
 			fi
 		done <$PASSWORDS
 	done
 fi
-kdialog  --title "Extract w PW" --passivepopup "Finished extraction"
+dunstify -c $msgid
+dunstify -a "Extract w PW" -u low -i dialog-information "Finished extraction of $cnt files. Failed: $failc"
