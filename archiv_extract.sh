@@ -17,8 +17,9 @@ where=$(dirname "$@")
 cd "$where"
 # Passwords must be in file ~/.config/archiv_extract.pass  (one password per line)
 PASSWORDS="$HOME/.config/archiv_extract.pass"
-msgTag="archiv_extract"
-dir=$(kdialog --getexistingdirectory ~/Videos/raw);
+CONFIG="$HOME/.config/archiv_extract.conf"
+read -r defdir<$CONFIG
+dir=$(kdialog --getexistingdirectory $defdir)
 max=$(echo $@|wc -w)
 cnt=0
 failc=0

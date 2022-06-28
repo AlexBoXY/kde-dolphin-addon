@@ -14,24 +14,27 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+# Filetypes must be in file ~/.config/move_main.conf  (one password per line)
+CONFIG="$HOME/.config/move_main.conf"
 dir="$1/"
-ext=$(kdialog --checklist "Select File-Extension(s):" 1 "*.mkv" on 2 "*.avi" off 3 "*.mp4" off)
+#ext=$(kdialog --checklist "Select File-Extension(s):" 1 "*.mkv" on 2 "*.avi" off 3 "*.mp4" off)
 rcExt=$?
 count=0
 if [[ $rcExt == 0 ]]; then
-	for i in $ext; do
-		case $i in
-		*1* )
-			count=$(expr $count + $(find $dir -mindepth 2 -name '*.mkv' -exec mv {} $dir \; -printf '.' | wc -c))
-			;;
-		*2* )
-			count=$(expr $count + $(find $dir -mindepth 2 -name '*.avi' -exec mv {} $dir \; -printf '.' | wc -c))
-			;;
-		*3* )
-			count=$(expr $count + $(find $dir -mindepth 2 -name '*.mp4' -exec mv {} $dir \;  -printf '.' | wc -c))
-			;;
-		esac
-	done
+#	for i in $ext; do
+    while read -r ftyp; do
+#		case $i in
+#		*1* )
+			count=$(expr $count + $(find $dir -mindepth 2 -name $ftyp -exec mv {} $dir \; -printf '.' | wc -c))
+#			;;
+#		*2* )
+#			count=$(expr $count + $(find $dir -mindepth 2 -name '*.avi' -exec mv {} $dir \; -printf '.' | wc -c))
+#			;;
+#		*3* )
+#			count=$(expr $count + $(find $dir -mindepth 2 -name '*.mp4' -exec mv {} $dir \;  -printf '.' | wc -c))
+#			;;
+#		esac
+	done < $CONFIG
 fi
 dunstify -a "move_mainDir" -u low -i dialog-information "Finished moving $count files."
 
