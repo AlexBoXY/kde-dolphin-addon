@@ -14,8 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# Filetypes must be in file ~/.config/move_main.conf  (one password per line)
-CONFIG="$HOME/.config/move_main.conf"
+# Filetypes must be in file ~/.config/move_mainDir.conf  (one file type per line with wildcard '*' eg. *.txt ).
+CONFIG="$HOME/.config/move_mainDir.conf"
 dir="$1/"
 #ext=$(kdialog --checklist "Select File-Extension(s):" 1 "*.mkv" on 2 "*.avi" off 3 "*.mp4" off)
 rcExt=$?
@@ -25,6 +25,7 @@ if [[ $rcExt == 0 ]]; then
     while read -r ftyp; do
 #		case $i in
 #		*1* )
+echo $ftyp
 			count=$(expr $count + $(find $dir -mindepth 2 -name $ftyp -exec mv {} $dir \; -printf '.' | wc -c))
 #			;;
 #		*2* )
