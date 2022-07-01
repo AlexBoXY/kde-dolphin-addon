@@ -13,26 +13,25 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-where=$(dirname "$@")
-cd "$where"
 # Passwords must be in file ~/.config/archiv_extract.pass  (one password per line)
+# (
 PASSWORDS="$HOME/.config/archiv_extract.pass"
 CONFIG="$HOME/.config/archiv_extract.conf"
-read -r defdir<$CONFIG
-dir=$(kdialog --getexistingdirectory $defdir)
-max=$(echo $@|wc -w)
+read -r defdir<"$CONFIG"
 cnt=0
 failc=0
 failf=""
 msgid=123
-if [[ $? == 0 ]]; then
-	for i in $@; do
-		let cnt++
-		dunstify -r $msgid -a "Extract w PW" -u low -i dialog-information "$cnt of $max files.
+status="none"
+if  dir=$(kdialog --getexistingdirectory "$defdir"); then
+	for i in "$@"; do
+# echo "$i"
+		(( cnt++ )) || true
+		dunstify -r $msgid -a "Extract w PW" -u low -i dialog-information "$cnt of $# files.
 Next: $i"
 		status="fail"
 		while read -r pass; do
-			if [[ $i == *".rar" ]]; then
+			if [[ "$i" == *".rar" ]]; then
 				unrar -y -p"$pass" x "$i" "$dir"
 				rc=$?
 			else
@@ -41,15 +40,22 @@ Next: $i"
 			fi
 			if [[ $rc != 0 ]]; then
 				status="fail"
-				failf+="$i "
-				let failc++
 				dunstify -a "Extract w PW" -u low -i dialog-information  "Failed $i with PW: $pass"
 			else
 				status="success"
 				break
 			fi
-		done <$PASSWORDS
+		done <"$PASSWORDS"
+		if [[ $status = "fail" ]]; then
+            failf+="$i "
+            (( failc++ )) || true
+		fi
 	done
 fi
 dunstify -c $msgid
-dunstify -a "Extract w PW" -u low -i dialog-information "Finished extraction of $cnt files. Failed: $failc"
+if [[ $status = "none" ]]; then
+    dunstify -a "Extract w PW" -u low -i dialog-information "Canceled"
+else
+    dunstify -a "Extract w PW" -u low -i dialog-information "Finished extraction of $cnt files. Failed: $failc"
+fi
+# ) 2>&1 | tee -a /home/alexander/test.log
