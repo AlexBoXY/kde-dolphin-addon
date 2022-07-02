@@ -19,7 +19,7 @@ CONFIG="$HOME/.config/move_mainDir.conf"
 dir="$1/"
 count=0
 while read -r ftyp; do
-    count=$(expr $count + $(find $dir -mindepth 2 -name "$ftyp" -exec mv {} $dir \; -printf '.' | wc -c))
-done < $CONFIG
+    count=$((count + $(find "$dir" -mindepth 2 -name "$ftyp" -exec mv {} "$dir" \; -printf '.' | wc -c)))
+done < "$CONFIG"
 dunstify -a "move_mainDir" -u low -i dialog-information "Finished moving $count files."
 
