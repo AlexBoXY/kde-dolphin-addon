@@ -21,13 +21,13 @@ read -r defdir<"$CONFIG"
 cnt=0
 failc=0
 failf=""
-msgid=123
+msgid=$(($RANDOM))
 status="none"
 if  dir=$(kdialog --getexistingdirectory "$defdir"); then
 	for i in "$@"; do
 # echo "$i"
 		(( cnt++ )) || true
-		dunstify -r $msgid -a "Extract w PW" -u low -i dialog-information "$cnt of $# files.
+		dunstify -r $msgid -t 99999 -a "Extract w PW" -u low -i dialog-information "$cnt of $# files.
 Next: $i"
 		status="fail"
 		while read -r pass; do
@@ -52,7 +52,7 @@ Next: $i"
 		fi
 	done
 fi
-dunstify -c $msgid
+dunstify -C $msgid
 if [[ $status = "none" ]]; then
     dunstify -a "Extract w PW" -u low -i dialog-information "Canceled"
 else
