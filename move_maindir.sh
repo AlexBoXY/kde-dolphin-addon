@@ -25,7 +25,7 @@ done < "$CONFIG"
 ftypinput=$(kdialog --title "Which file-types to move?" --inputbox "File-types to move:" "$default")
 if [ $? = 0 ]; then
     for i in $ftypinput; do
-        count=$((count + $(find "$dir" -mindepth 2 -name "$i" -exec mv {} "$dir" \; -printf '.' | wc -c)))
+        count=$((count + $(find "$dir" -mindepth 2 -name "*$i" -exec mv {} "$dir" \; -printf '.' | wc -c)))
     done
 fi
 dunstify -a "move_mainDir" -u low -i dialog-information "Finished moving $count files."
