@@ -27,35 +27,39 @@ if  dir=$(kdialog --getexistingdirectory "$defdir"); then
 	for i in "$@"; do
 # echo "$i"
 		(( cnt++ )) || true
-		dunstify -r $msgid -t 99999 -a "Extract w PW" -u low -i dialog-information "$cnt of $# files.
-Next: $i"
-		status="fail"
-		while read -r pass; do
-			if [[ "$i" == *".rar" ]]; then
-				unrar -y -p"$pass" x "$i" "$dir"
-				rc=$?
-			else
-				7z -y -p"$pass" -o"$dir" x "$i"
-				rc=$?
-			fi
-			if [[ $rc != 0 ]]; then
-				status="fail"
-				dunstify -a "Extract w PW" -u low -i dialog-information  "Failed $i with PW: $pass"
-			else
-				status="success"
-				break
-			fi
-		done <"$PASSWORDS"
-		if [[ $status = "fail" ]]; then
-            failf+="$i "
-            (( failc++ )) || true
-		fi
+		ACTION=$(dunstify --replace=$msgid --appname="Extract w PW" --icon=dialog-information --action="cancelAction,Cancel" "$cnt of $# files." "Next: $i")
+        if [ "cancelAction" == "$ACTION" ]; then
+            status="canceled"
+            break
+        else
+            status="fail"
+            while read -r pass; do
+                if [[ "$i" == *".rar" ]]; then
+                    unrar -y -p"$pass" x "$i" "$dir"
+                    rc=$?
+                else
+                    7z -y -p"$pass" -o"$dir" x "$i"
+                    rc=$?
+                fi
+                if [[ $rc != 0 ]]; then
+                    status="fail"
+                    dunstify --appname="Extract w PW" --urgency=low --icon=dialog-information  "Failed $i with PW: $pass"
+                else
+                    status="success"
+                    break
+                fi
+            done <"$PASSWORDS"
+            if [[ $status = "fail" ]]; then
+                failf+="$i "
+                (( failc++ )) || true
+            fi
+        fi
 	done
 fi
 dunstify -C $msgid
-if [[ $status = "none" ]]; then
-    dunstify -a "Extract w PW" -u low -i dialog-information "Canceled"
+if [[ $status = "canceled" ]]; then
+    dunstify --appname="Extract w PW" --urgency=low --icon=dialog-information "Canceled"
 else
-    dunstify -a "Extract w PW" -u low -i dialog-information "Finished extraction of $cnt files. Failed: $failc"
+    dunstify --appname="Extract w PW" --urgency=low --icon=dialog-information "Finished extraction of $cnt files. Failed: $failc"
 fi
 # ) 2>&1 | tee -a /home/alexander/test.log
