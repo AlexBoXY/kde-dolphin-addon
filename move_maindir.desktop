@@ -8,5 +8,6 @@ Actions=mvMainDir
 [Desktop Action mvMainDir]
 Name=Move files to recent directory
 Name[de]=Verschiebt Dateien ins aktuelle Verzeichnis
+Name[nl]=Bestanden verplaatsen naar onlangs gebruikte map
 Icon=inode-directory
 Exec=/bin/sh -c 'move_maindir.sh "%U"'
