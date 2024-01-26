@@ -21,14 +21,21 @@ read -r defdir<"$CONFIG"
 cnt=0
 failc=0
 failf=""
-msgid=$(($RANDOM))
+msgid=0
 status="none"
 if  dir=$(kdialog --getexistingdirectory "$defdir"); then
-	for i in "$@"; do
-# echo "$i"
-		(( cnt++ )) || true
-		ACTION=$(dunstify --replace=$msgid --appname="Extract w PW" --icon=dialog-information --action="cancelAction,Cancel" "$cnt of $# files." "Next: $i")
-        if [ "cancelAction" == "$ACTION" ]; then
+    for i in "$@"; do
+        (( cnt++ )) || true
+        ACTION=$(notify-send.py "$cnt of $# files. Next: $i" \
+                            --app-name "Extract w PW" \
+                            --urgency low \
+                            --icon dialog-information \
+                            --action cancelAction:Cancel \
+                            --replaces-id $msgid )
+        if [ "$MSGID" -gt 0 ]; then
+            MSGID="${ACTION#*$'\n'}"
+        fi
+        if [ "cancelAction" == "${ACTION:0:12}" ]; then
             status="canceled"
             break
         else
@@ -43,7 +50,11 @@ if  dir=$(kdialog --getexistingdirectory "$defdir"); then
                 fi
                 if [[ $rc != 0 ]]; then
                     status="fail"
-                    dunstify --appname="Extract w PW" --urgency=low --icon=dialog-information  "Failed $i with PW: $pass"
+                    notify-send.py "Failed $i with PW: $pass" \
+                                    --app-name "Extract w PW" \
+                                    --urgency low \
+                                    --icon dialog-information \
+                                    --replaces-id $msgid
                 else
                     status="success"
                     break
@@ -54,12 +65,18 @@ if  dir=$(kdialog --getexistingdirectory "$defdir"); then
                 (( failc++ )) || true
             fi
         fi
-	done
+    done
 fi
-dunstify -C $msgid
 if [[ $status = "canceled" ]]; then
-    dunstify --appname="Extract w PW" --urgency=low --icon=dialog-information "Canceled"
+    notify-send.py "Canceled" \
+                    --app-name "Extract w PW" \
+                    --urgency low \
+                    --icon dialog-information \
+                    --replaces-id $msgid
 else
-    dunstify --appname="Extract w PW" --urgency=low --icon=dialog-information "Finished extraction of $cnt files. Failed: $failc"
+    notify-send.py "Finished extraction of $cnt files. Failed: $failc" \
+                    --app-name "Extract w PW" \
+                    --urgency low \
+                    --icon dialog-information \
+                    --replaces-id $msgid
 fi
-# ) 2>&1 | tee -a /home/alexander/test.log
