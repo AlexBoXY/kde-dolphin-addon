@@ -23,6 +23,7 @@ failc=0
 failf=""
 msgid=0
 status="none"
+
 if  dir=$(kdialog --getexistingdirectory "$defdir"); then
     for i in "$@"; do
         (( cnt++ )) || true
@@ -31,9 +32,9 @@ if  dir=$(kdialog --getexistingdirectory "$defdir"); then
                             --urgency low \
                             --icon dialog-information \
                             --action cancelAction:Cancel \
-                            --replaces-id $msgid )
-        if [ "$MSGID" -gt 0 ]; then
-            MSGID="${ACTION#*$'\n'}"
+                            --replaces-id "$msgid" )
+        if [ "$msgid" -eq 0 ]; then
+            msgid="${ACTION#*$'\n'}"
         fi
         if [ "cancelAction" == "${ACTION:0:12}" ]; then
             status="canceled"
@@ -54,7 +55,7 @@ if  dir=$(kdialog --getexistingdirectory "$defdir"); then
                                     --app-name "Extract w PW" \
                                     --urgency low \
                                     --icon dialog-information \
-                                    --replaces-id $msgid
+                                    --replaces-id "$msgid"
                 else
                     status="success"
                     break
@@ -66,17 +67,19 @@ if  dir=$(kdialog --getexistingdirectory "$defdir"); then
             fi
         fi
     done
+else
+    status="canceled"
 fi
 if [[ $status = "canceled" ]]; then
-    notify-send.py "Canceled" \
+    notify-send.py "Canceled. Already extracted $cnt archives. Failed: $failc" \
                     --app-name "Extract w PW" \
                     --urgency low \
                     --icon dialog-information \
-                    --replaces-id $msgid
+                    --replaces-id "$msgid"
 else
-    notify-send.py "Finished extraction of $cnt files. Failed: $failc" \
+    notify-send.py "Finished extraction of $cnt archives. Failed: $failc" \
                     --app-name "Extract w PW" \
                     --urgency low \
                     --icon dialog-information \
-                    --replaces-id $msgid
+                    --replaces-id "$msgid"
 fi
