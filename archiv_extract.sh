@@ -21,21 +21,33 @@ read -r defdir<"$CONFIG"
 cnt=0
 failc=0
 failf=""
-msgid=0
+#msgid=0
+canceled="false"
 status="none"
+
 if  dir=$(kdialog --getexistingdirectory "$defdir"); then
+    dbusRef=$(kdialog --title "Extract w PW" \
+        --progressbar "$cnt of $# files. Next: $i" $#)
+    qdbus $dbusRef showCancelButton true
     for i in "$@"; do
+        qdbus $dbusRef Set "" value $cnt
+        qdbus $dbusRef setLabelText "$cnt of $# files. Next: $i"
         (( cnt++ )) || true
-        ACTION=$(notify-send.py "$cnt of $# files. Next: $i" \
-                            --app-name "Extract w PW" \
-                            --urgency low \
-                            --icon dialog-information \
-                            --action cancelAction:Cancel \
-                            --replaces-id $msgid )
-        if [ "$MSGID" -gt 0 ]; then
-            MSGID="${ACTION#*$'\n'}"
-        fi
-        if [ "cancelAction" == "${ACTION:0:12}" ]; then
+#        ACTION=$(notify-send.py "$cnt of $# files. Next: $i" \
+#                            --app-name "Extract w PW" \
+#                            --urgency low \
+#                            --icon dialog-information \
+#                            --action cancelAction:Cancel \
+#                            --replaces-id "$msgid" )
+#        if [ "$msgid" -eq 0 ]; then
+#            msgid="${ACTION#*$'\n'}"
+#        fi
+#        if [ "cancelAction" == "${ACTION:0:12}" ]; then
+#            status="canceled"
+#            break
+#        else
+        canceled=$(qdbus $dbusRef wasCancelled)
+        if [[ "$canceled" == "true" ]]; then
             status="canceled"
             break
         else
@@ -50,11 +62,13 @@ if  dir=$(kdialog --getexistingdirectory "$defdir"); then
                 fi
                 if [[ $rc != 0 ]]; then
                     status="fail"
-                    notify-send.py "Failed $i with PW: $pass" \
-                                    --app-name "Extract w PW" \
-                                    --urgency low \
-                                    --icon dialog-information \
-                                    --replaces-id $msgid
+                    kdialog --title "Extract w PW" --passivepopup \
+                        "Failed $i with PW: $pass" 10
+#                    notify-send.py "Failed $i with PW: $pass" \
+#                                    --app-name "Extract w PW" \
+#                                    --urgency low \
+#                                    --icon dialog-information \
+#                                    --replaces-id "$msgid"
                 else
                     status="success"
                     break
@@ -65,18 +79,26 @@ if  dir=$(kdialog --getexistingdirectory "$defdir"); then
                 (( failc++ )) || true
             fi
         fi
+#    fi
     done
+    qdbus $dbusRef close
+else
+    status="canceled"
 fi
 if [[ $status = "canceled" ]]; then
-    notify-send.py "Canceled" \
-                    --app-name "Extract w PW" \
-                    --urgency low \
-                    --icon dialog-information \
-                    --replaces-id $msgid
+    kdialog --title "Extract w PW" --passivepopup \
+        "Canceled. Already extracted $cnt archives. Failed: $failc" 10
+#    notify-send.py "Canceled. Already extracted $cnt archives. Failed: $failc" \
+#                    --app-name "Extract w PW" \
+#                    --urgency low \
+#                    --icon dialog-information \
+#                    --replaces-id "$msgid"
 else
-    notify-send.py "Finished extraction of $cnt files. Failed: $failc" \
-                    --app-name "Extract w PW" \
-                    --urgency low \
-                    --icon dialog-information \
-                    --replaces-id $msgid
+    kdialog --title "Extract w PW" --passivepopup \
+        "Finished extraction of $cnt archives. Failed: $failc" 10
+#    notify-send.py "Finished extraction of $cnt archives. Failed: $failc" \
+#                    --app-name "Extract w PW" \
+#                    --urgency low \
+#                    --icon dialog-information \
+#                    --replaces-id "$msgid"
 fi
