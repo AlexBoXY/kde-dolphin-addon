@@ -28,8 +28,5 @@ if [ $? = 0 ]; then
         count=$((count + $(find "$dir" -mindepth 2 -name "*$i" -exec mv {} "$dir" \; -printf '.' | wc -c)))
     done
 fi
-notify-send.py "Finished moving $count files." \
-                --app-name "move_mainDir" \
-                --urgency low \
-                --icon dialog-information
+kdialog --title "move_mainDir" --passivepopup "Finished moving $count files." 5
 
